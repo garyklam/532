@@ -9,20 +9,14 @@ import threading
 import time
 from uuid import uuid4
 import json
-from datetime import datetime
+from statistics import mean
 from random import randint
 
 
 parser = argparse.ArgumentParser(description="Send and receive messages through and MQTT connection.")
-parser.add_argument('--topic', default="hw1/test", help="Topic to subscribe to, and publish messages to.")
-parser.add_argument('--message', default="Hello World!", help="Message to publish. " +
-                                                              "Specify empty string to publish nothing.")
-parser.add_argument('--count', default=3, type=int, help="Number of messages to publish/receive before exiting. " +
-                                                          "Specify 0 to run forever.")
 parser.add_argument('--verbosity', choices=[x.name for x in io.LogLevel], default=io.LogLevel.NoLogs.name,
     help='Logging level')
 parser.add_argument('--client-id', default="test-" + str(uuid4()), help="Client ID for MQTT connection.")
-parser.add_argument('--question5', default=False)
 
 # Using globals to simplify sample code
 args = parser.parse_args()
@@ -65,12 +59,6 @@ def on_message_received(topic, payload, dup, qos, retain, **kwargs):
     print("Received message from topic '{}': {}".format(topic, payload))
     global received_count
     received_count += 1
-    if topic == "hw1/q4":
-        cur_time = datetime.now()
-        mqtt_connection.publish(
-            topic="hw1/response",
-            payload=json.dumps(cur_time.strftime('%H:%M:%S')),
-            qos=mqtt.QoS.AT_LEAST_ONCE)
     if received_count == args.count:
         received_all_event.set()
 
@@ -98,59 +86,45 @@ if __name__ == '__main__':
     connect_future.result()
     print("Connected!")
 
-    if args.question5:
-        print("Sending time data...")
-        for i in range(3):
-            delay = randint(1, 3)
-            now = datetime.now()
-            message = {"count": i, "time": {"hour": now.hour, "minute": now.minute, "second": now.second}}
-            message_json = json.dumps(message)
-            mqtt_connection.publish(
-                topic="hw1/q5",
-                payload=message_json,
-                qos=mqtt.QoS.AT_LEAST_ONCE)
-            time.sleep(delay)
-        print("Finished")
+else:
+    # Subscribe
+    subscribe_future, packet_id = mqtt_connection.subscribe(
+        topic="hw1/+",
+        qos=mqtt.QoS.AT_LEAST_ONCE,
+        callback=on_message_received)
 
-    else:
-        # Subscribe
-        subscribe_future, packet_id = mqtt_connection.subscribe(
-            topic="hw1/+",
-            qos=mqtt.QoS.AT_LEAST_ONCE,
-            callback=on_message_received)
+    subscribe_result = subscribe_future.result()
+    print("Subscribed to hw1/+")
 
-        subscribe_result = subscribe_future.result()
-        print("Subscribed to hw1/+")
+    # Publish message to server desired number of times.
+    # This step is skipped if message is blank.
+    # This step loops forever if count was set to 0.
+    total = 0
+    while i in range(2):
+        for j in range(5):
+            measurements = []
+            sample = randint(100, 200)
+            measurements.append(sample)
+            time.sleep(1)
+        total += sum(measurements)
+        message = {'count': i, 'max': max(measurements), 'min': min(measurements), 'avg': mean(measurements)}
+        message_json = json.dumps(message)
+        mqtt_connection.publish(
+            topic='532/light',
+            payload=message_json,
+            qos=mqtt.QoS.AT_LEAST_ONCE)
 
-        # Publish message to server desired number of times.
-        # This step is skipped if message is blank.
-        # This step loops forever if count was set to 0.
-        if args.message:
-            if args.count == 0:
-                print("Sending messages until program killed")
-            else:
-                print("Sending {} message(s)".format(args.count))
 
-            publish_count = 1
-            while (publish_count <= args.count) or (args.count == 0):
-                message = {"message": "{}".format(args.message), "count": "{}".format(publish_count)}
-                message_json = json.dumps(message)
-                mqtt_connection.publish(
-                    topic=args.topic,
-                    payload=message_json,
-                    qos=mqtt.QoS.AT_LEAST_ONCE)
-                time.sleep(1)
-                publish_count += 1
 
-        # Wait for all messages to be received.
-        # This waits forever if count was set to 0.
-        if args.count != 0 and not received_all_event.is_set():
-            print("Waiting for all messages to be received...")
+    # Wait for all messages to be received.
+    # This waits forever if count was set to 0.
+    if args.count != 0 and not received_all_event.is_set():
+        print("Waiting for all messages to be received...")
 
-        received_all_event.wait()
+    received_all_event.wait()
 
-    # Disconnect
-    print("Disconnecting...")
-    disconnect_future = mqtt_connection.disconnect()
-    disconnect_future.result()
-    print("Disconnected!")
+# Disconnect
+print("Disconnecting...")
+disconnect_future = mqtt_connection.disconnect()
+disconnect_future.result()
+print("Disconnected!")
