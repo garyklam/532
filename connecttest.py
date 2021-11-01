@@ -11,6 +11,7 @@ from uuid import uuid4
 import json
 from statistics import mean
 from random import randint
+from timedate import timedate
 
 
 parser = argparse.ArgumentParser(description="Send and receive messages through and MQTT connection.")
@@ -72,14 +73,15 @@ if __name__ == '__main__':
     # This step is skipped if message is blank.
     # This step loops forever if count was set to 0.
     total = 0
-    for i in range(2):
+    for i in range(5):
         for j in range(5):
+            now = timedate.now()
             measurements = []
             sample = randint(100, 200)
             measurements.append(sample)
             time.sleep(1)
         total += sum(measurements)
-        message = {'count': i, 'max': max(measurements), 'min': min(measurements), 'avg': mean(measurements)}
+        message = {'count': i, 'time': f'{now.minute}:{now.second}', 'max': max(measurements), 'min': min(measurements), 'avg': mean(measurements)}
         message_json = json.dumps(message)
         mqtt_connection.publish(
             topic='532/light',
