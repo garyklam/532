@@ -11,7 +11,7 @@ from uuid import uuid4
 import json
 from statistics import mean
 from random import randint
-from timedate import timedate
+from datetime import datetime
 
 
 parser = argparse.ArgumentParser(description="Send and receive messages through and MQTT connection.")
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     total = 0
     for i in range(5):
         for j in range(5):
-            now = timedate.now()
+            now = datetime.now()
             measurements = []
             sample = randint(100, 200)
             measurements.append(sample)
