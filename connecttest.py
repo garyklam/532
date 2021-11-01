@@ -72,7 +72,7 @@ if __name__ == '__main__':
     # This step is skipped if message is blank.
     # This step loops forever if count was set to 0.
     total = 0
-    while i in range(2):
+    for i in range(2):
         for j in range(5):
             measurements = []
             sample = randint(100, 200)
