@@ -82,10 +82,10 @@ if __name__ == '__main__':
 
     mqtt_connection = mqtt_connection_builder.mtls_from_path(
             endpoint="arit3ikxcci9r-ats.iot.us-west-2.amazonaws.com",
-            cert_filepath="~/certs/device.pem.crt",
-            pri_key_filepath="~/certs/private.pem.key",
+            cert_filepath="/home/pi/certs/device.pem.crt",
+            pri_key_filepath="/home/pi//certs/private.pem.key",
             client_bootstrap=client_bootstrap,
-            ca_filepath="~/certs/AmazonRootCA1.pem",
+            ca_filepath="/home/pi/certs/AmazonRootCA1.pem",
             on_connection_interrupted=on_connection_interrupted,
             on_connection_resumed=on_connection_resumed,
             client_id=args.client_id,
