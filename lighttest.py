@@ -1,8 +1,6 @@
 #measuring the light intensity using a photocell
 import RPi.GPIO as GPIO,time,os               #import the libraries
-DEBUG=1
-GPIO.setmode(GPIO.BOARD)
-GPIO.setwarnings(False)
+
 def RCtime(RCpin):   # function start
 	reading=0
 	GPIO.setup(RCpin,GPIO.OUT)
@@ -15,5 +13,9 @@ def RCtime(RCpin):   # function start
 # measuring time which in turn is measuring resistance
 	return reading                               
 # function
-while True:
-	print RCtime(12)      # calling the function
+if __name__ == '__main__':
+	DEBUG=1
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setwarnings(False)
+	while True:
+		print RCtime(12)      # calling the function
