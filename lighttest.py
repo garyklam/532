@@ -18,4 +18,4 @@ if __name__ == '__main__':
 	GPIO.setmode(GPIO.BOARD)
 	GPIO.setwarnings(False)
 	while True:
-		print RCtime(12)      # calling the function
+		print(RCtime(12))      # calling the function
