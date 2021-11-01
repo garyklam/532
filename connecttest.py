@@ -45,24 +45,6 @@ def on_connection_resumed(connection, return_code, session_present, **kwargs):
         resubscribe_future.add_done_callback(on_resubscribe_complete)
 
 
-def on_resubscribe_complete(resubscribe_future):
-        resubscribe_results = resubscribe_future.result()
-        print("Resubscribe results: {}".format(resubscribe_results))
-
-        for topic, qos in resubscribe_results['topics']:
-            if qos is None:
-                sys.exit("Server rejected resubscribe to topic: {}".format(topic))
-
-
-# Callback when the subscribed topic receives a message
-def on_message_received(topic, payload, dup, qos, retain, **kwargs):
-    print("Received message from topic '{}': {}".format(topic, payload))
-    global received_count
-    received_count += 1
-    if received_count == args.count:
-        received_all_event.set()
-
-
 if __name__ == '__main__':
     event_loop_group = io.EventLoopGroup(1)
     host_resolver = io.DefaultHostResolver(event_loop_group)
@@ -86,16 +68,6 @@ if __name__ == '__main__':
     connect_future.result()
     print("Connected!")
 
-else:
-    # Subscribe
-    subscribe_future, packet_id = mqtt_connection.subscribe(
-        topic="hw1/+",
-        qos=mqtt.QoS.AT_LEAST_ONCE,
-        callback=on_message_received)
-
-    subscribe_result = subscribe_future.result()
-    print("Subscribed to hw1/+")
-
     # Publish message to server desired number of times.
     # This step is skipped if message is blank.
     # This step loops forever if count was set to 0.
@@ -113,15 +85,6 @@ else:
             topic='532/light',
             payload=message_json,
             qos=mqtt.QoS.AT_LEAST_ONCE)
-
-
-
-    # Wait for all messages to be received.
-    # This waits forever if count was set to 0.
-    if args.count != 0 and not received_all_event.is_set():
-        print("Waiting for all messages to be received...")
-
-    received_all_event.wait()
 
 # Disconnect
 print("Disconnecting...")
