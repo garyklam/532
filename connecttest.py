@@ -1,7 +1,6 @@
 # CSS 532 HW 1
 # Modified from AWS SDK sample files
 
-import argparse
 from awscrt import io, mqtt, auth, http
 from awsiot import mqtt_connection_builder
 import sys
@@ -14,18 +13,9 @@ from random import randint
 from datetime import datetime
 
 
-parser = argparse.ArgumentParser(description="Send and receive messages through and MQTT connection.")
-parser.add_argument('--verbosity', choices=[x.name for x in io.LogLevel], default=io.LogLevel.NoLogs.name,
-    help='Logging level')
-parser.add_argument('--client-id', default="test-" + str(uuid4()), help="Client ID for MQTT connection.")
-
 # Using globals to simplify sample code
-args = parser.parse_args()
 
-io.init_logging(getattr(io.LogLevel, args.verbosity), 'stderr')
-
-received_count = 0
-received_all_event = threading.Event()
+io.init_logging(getattr(io.LogLevel, io.LogLevel.NoLogs.name), 'stderr')
 
 
 # Callback when connection is accidentally lost.
@@ -46,6 +36,15 @@ def on_connection_resumed(connection, return_code, session_present, **kwargs):
         resubscribe_future.add_done_callback(on_resubscribe_complete)
 
 
+def on_resubscribe_complete(resubscribe_future):
+    resubscribe_results = resubscribe_future.result()
+    print("Resubscribe results: {}".format(resubscribe_results))
+
+    for topic, qos in resubscribe_results['topics']:
+        if qos is None:
+            sys.exit("Server rejected resubscribe to topic: {}".format(topic))
+
+
 if __name__ == '__main__':
     event_loop_group = io.EventLoopGroup(1)
     host_resolver = io.DefaultHostResolver(event_loop_group)
@@ -59,7 +58,7 @@ if __name__ == '__main__':
             ca_filepath="/home/pi/certs/AmazonRootCA1.pem",
             on_connection_interrupted=on_connection_interrupted,
             on_connection_resumed=on_connection_resumed,
-            client_id=args.client_id,
+            client_id=str(uuid4()),
             clean_session=False,
             keep_alive_secs=30)
 
@@ -73,8 +72,8 @@ if __name__ == '__main__':
     # This step is skipped if message is blank.
     # This step loops forever if count was set to 0.
     total = 0
-    for i in range(5):
-        for j in range(5):
+    for i in range(4):
+        for j in range(15):
             now = datetime.now()
             measurements = []
             sample = randint(100, 200)
