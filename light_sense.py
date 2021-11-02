@@ -89,7 +89,8 @@ if __name__ == '__main__':
                    'delta': max(measurements)-min(measurements),
                    'avg': mean(measurements) // 1,
                    'total': total,
-                   'blink': 0}
+                   'blink': 0,
+                   'flag': 0}
         message_json = json.dumps(message)
         mqtt_connection.publish(
             topic='test',
