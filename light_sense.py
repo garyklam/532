@@ -16,7 +16,7 @@ def RCtime(RCpin):
     reading = 0
     GPIO.setup(RCpin, GPIO.OUT)
     GPIO.output(RCpin, GPIO.LOW)
-    time.sleep(1)
+    time.sleep(.5)
     GPIO.setup(RCpin, GPIO.IN)
     while GPIO.input(RCpin) == GPIO.LOW:
         reading += 1
@@ -76,16 +76,18 @@ if __name__ == '__main__':
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     total = 0
-    for i in range(2):
+    for i in range(4):
         measurements = []
-        while len(measurements) <= 5:
-            curr = datetime.now()
+        start = datetime.now()
+        curr = datetime.now()
+        while (curr-start).total_seconds() < 5:
             measurements.append(RCtime(12))
-        total += 5 * mean(measurements)
+            curr = datetime.now()
+        total += 5 * mean(measurements) // 1
         message = {'count': i,
                    'time': f'{curr.hour}:{curr.minute}:{curr.second}',
                    'delta': max(measurements)-min(measurements),
-                   'avg': mean(measurements),
+                   'avg': mean(measurements) // 1,
                    'total': total,
                    'blink': 0}
         message_json = json.dumps(message)
