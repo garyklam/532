@@ -84,8 +84,8 @@ if __name__ == '__main__':
             measurements.append(RCtime(12))
             curr = datetime.now()
         total += 5 * mean(measurements) // 1
-        message = {'count': i,
-                   'time': f'{curr.hour}:{curr.minute}:{curr.second}',
+        message = {'count': f'{i}',
+                   'time': f'{curr.month}/{curr.day} {curr.hour}:{curr.minute}:{curr.second}',
                    'delta': max(measurements)-min(measurements),
                    'avg': mean(measurements) // 1,
                    'total': total,
