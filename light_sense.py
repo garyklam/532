@@ -93,7 +93,7 @@ if __name__ == '__main__':
                    'flag': 0}
         message_json = json.dumps(message)
         mqtt_connection.publish(
-            topic='test',
+            topic='532/light',
             payload=message_json,
             qos=mqtt.QoS.AT_LEAST_ONCE)
         TOTAL = 0
