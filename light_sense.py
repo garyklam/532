@@ -76,11 +76,11 @@ if __name__ == '__main__':
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     total = 0
-    for i in range(4):
+    for i in range(1, 120):
         measurements = []
         start = datetime.now()
         curr = datetime.now()
-        while (curr-start).total_seconds() < 5:
+        while (curr-start).total_seconds() < 30:
             measurements.append(round((10000/RCtime(12)), 2))
             curr = datetime.now()
         total += 5 * round(mean(measurements), 2)
