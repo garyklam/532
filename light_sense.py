@@ -82,6 +82,7 @@ if __name__ == '__main__':
         curr = datetime.now()
         while (curr-start).total_seconds() < 5:
             measurements.append(round((10000/RCtime(12)), 2))
+            print(measurements)
             curr = datetime.now()
         total += 5 * mean(measurements) // .01
         message = {'count': f'{i}',
