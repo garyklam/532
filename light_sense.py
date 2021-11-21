@@ -83,11 +83,11 @@ if __name__ == '__main__':
         while (curr-start).total_seconds() < 5:
             measurements.append(round((10000/RCtime(12)), 2))
             curr = datetime.now()
-        total += sum(measurements)
+        total += 5 * mean(measurements) // .01
         message = {'count': f'{i}',
                    'time': f'{curr.month}/{curr.day} {curr.hour}:{curr.minute}:{curr.second}',
                    'delta': max(measurements)-min(measurements),
-                   'avg': mean(measurements) // 0.01,
+                   'avg': mean(measurements) // .01,
                    'total': total,
                    'total_time': i*5,
                    'blink': 0,
