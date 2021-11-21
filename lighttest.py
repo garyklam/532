@@ -18,4 +18,4 @@ if __name__ == '__main__':
 	GPIO.setmode(GPIO.BOARD)
 	GPIO.setwarnings(False)
 	while True:
-		print((10000/RCtime(12))%0.01)      # calling the function
+		print(round((10000/RCtime(12)),2))      # calling the function
