@@ -84,12 +84,12 @@ if __name__ == '__main__':
             measurements.append(round((10000/RCtime(12)), 2))
             curr = datetime.now()
         total += 5 * mean(measurements) // .01
-        message = {'count': str(i),
-                   'time': "" + str(curr.month) + "/" + str(curr.day) + " " + str(curr.hour) + ":" + str(curr.minute) + ":" + str(curr.second),
-                   'delta': max(measurements)-min(measurements),
+        message = {'count': f'{i}',
+                   'time': f'{curr.month}/{curr.day} {curr.hour}:{curr.minute}:{curr.second}',
+                   'delta': round((max(measurements)-min(measurements)), 2),
                    'avg': mean(measurements) // .01,
                    'total': total,
-                   'total_time': i*5,
+                   'total_time': (i+1)*5,
                    'blink': 0,
                    'flag': 0}
         message_json = json.dumps(message)
