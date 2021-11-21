@@ -85,7 +85,7 @@ if __name__ == '__main__':
             curr = datetime.now()
         total += 5 * mean(measurements) // .01
         message = {'count': str(i),
-                   'time': f'{curr.month}/{curr.day} {curr.hour}:{curr.minute}:{curr.second}',
+                   'time': "" + str(curr.month) + "/" + str(curr.day) + " " + str(curr.hour) + ":" + str(curr.minute) + ":" + str(curr.second),
                    'delta': max(measurements)-min(measurements),
                    'avg': mean(measurements) // .01,
                    'total': total,
