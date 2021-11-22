@@ -90,7 +90,6 @@ if __name__ == '__main__':
                    'avg': round(mean(measurements), 2),
                    'total': total,
                    'total_time': (i)*30,
-                   'blink': 0,
                    'flag': 0}
         message_json = json.dumps(message)
         mqtt_connection.publish(
