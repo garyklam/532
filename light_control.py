@@ -46,8 +46,8 @@ def on_message_received(topic, payload):
     print("Received message from topic '{}': {}".format(topic, message))
     if message[16] == "1":
         print("alert")
-        disconnect_future = mqtt_connection.disconnect()
-        disconnect_future.result()
+    disconnect_future = mqtt_connection.disconnect()
+    disconnect_future.result()
 
 
 if __name__ == '__main__':
