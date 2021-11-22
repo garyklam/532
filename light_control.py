@@ -41,7 +41,7 @@ def on_resubscribe_complete(resubscribe_future):
 
 
 # Callback when the subscribed topic receives a message
-def on_message_received(topic, payload, dup, qos, retain, **kwargs):
+def on_message_received(topic, payload):
     print("Received message from topic '{}': {}".format(topic, payload))
     if payload['prediction'] == "1":
         print("alert")
