@@ -43,9 +43,10 @@ def on_resubscribe_complete(resubscribe_future):
 # Callback when the subscribed topic receives a message
 def on_message_received(topic, payload):
     print("Received message from topic '{}': {}".format(topic, payload))
-    message = payload.decode('utf-8')
-    if message['prediction'] == "1":
-        print("alert")
+    message = payload.decode('UTF-8')
+    print(message)
+    # if message['prediction'] == "1":
+    #     print("alert")
 
 
 if __name__ == '__main__':
