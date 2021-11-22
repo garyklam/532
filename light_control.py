@@ -1,13 +1,9 @@
-# CSS 532 HW 1
-# Modified from AWS SDK sample files
-
-import argparse
 from awscrt import io, mqtt, auth, http
 from awsiot import mqtt_connection_builder
 import sys
 import time
 from uuid import uuid4
-import json
+import RPi.GPIO as GIPO
 
 
 io.init_logging(getattr(io.LogLevel, io.LogLevel.NoLogs.name), 'stderr')
@@ -42,12 +38,17 @@ def on_resubscribe_complete(resubscribe_future):
 
 # Callback when the subscribed topic receives a message
 def on_message_received(topic, payload):
+    GIPO.setmode(GIPO.BCM)
+    GIPO.setwarnings(False)
+    GIPO.setup(25, GIPO.OUT)
     message = payload.decode('UTF-8')
     print("Received message from topic '{}': {}".format(topic, message))
     if message[16] == "1":
-        print("alert")
-    disconnect_future = mqtt_connection.disconnect()
-    disconnect_future.result()
+        for i in range(10):
+            GIPO.output(25, GIPO.HIGH)
+            time.sleep(1)
+            GIPO.output(25, GIPO.LOW)
+            time.sleep(1)
 
 
 if __name__ == '__main__':
