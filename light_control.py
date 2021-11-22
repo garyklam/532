@@ -44,9 +44,10 @@ def on_resubscribe_complete(resubscribe_future):
 def on_message_received(topic, payload):
     print("Received message from topic '{}': {}".format(topic, payload))
     message = payload.decode('UTF-8')
-    print(message)
-    # if message['prediction'] == "1":
-    #     print("alert")
+    if message['prediction'] == "0":
+        print("alert")
+        disconnect_future = mqtt_connection.disconnect()
+        disconnect_future.result()
 
 
 if __name__ == '__main__':
