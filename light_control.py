@@ -1,28 +1,19 @@
+# CSS 532 HW 1
+# Modified from AWS SDK sample files
+
+import argparse
 from awscrt import io, mqtt, auth, http
 from awsiot import mqtt_connection_builder
 import sys
+import time
 from uuid import uuid4
 import json
-from datetime import datetime
-import time
-from statistics import mean
-import RPi.GPIO as GPIO
 
 
 io.init_logging(getattr(io.LogLevel, io.LogLevel.NoLogs.name), 'stderr')
 
 
-def RCtime(RCpin):
-    reading = 0
-    GPIO.setup(RCpin, GPIO.OUT)
-    GPIO.output(RCpin, GPIO.LOW)
-    time.sleep(.5)
-    GPIO.setup(RCpin, GPIO.IN)
-    while GPIO.input(RCpin) == GPIO.LOW:
-        reading += 1
-    return reading
-
-
+# Callback when connection is accidentally lost.
 def on_connection_interrupted(connection, error, **kwargs):
     print("Connection interrupted. error: {}".format(error))
 
@@ -49,6 +40,13 @@ def on_resubscribe_complete(resubscribe_future):
             sys.exit("Server rejected resubscribe to topic: {}".format(topic))
 
 
+# Callback when the subscribed topic receives a message
+def on_message_received(topic, payload, dup, qos, retain, **kwargs):
+    print("Received message from topic '{}': {}".format(topic, payload))
+    if payload['prediction'] == "1":
+        print("alert")
+
+
 if __name__ == '__main__':
     event_loop_group = io.EventLoopGroup(1)
     host_resolver = io.DefaultHostResolver(event_loop_group)
@@ -70,33 +68,19 @@ if __name__ == '__main__':
 
     # Future.result() waits until a result is available
     connect_future.result()
-    print("Connected!")
+    print("Waiting on alert")
 
-    DEBUG = 1
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setwarnings(False)
-    total = 0
-    for i in range(72, 300):
-        measurements = []
-        start = datetime.now()
-        curr = datetime.now()
-        while (curr-start).total_seconds() < 30:
-            measurements.append(round((10000/RCtime(12)), 2))
-            curr = datetime.now()
-        total += 5 * round(mean(measurements), 2)
-        message = {'count': f'{i}',
-                   'time': f'{curr.month}/{str(curr.day).zfill(2)} {str(curr.hour).zfill(2)}:{str(curr.minute).zfill(2)}:{str(curr.second).zfill(2)}',
-                   'delta': round((max(measurements)-min(measurements)), 2),
-                   'avg': round(mean(measurements), 2),
-                   'total': total,
-                   'total_time': (i-71)*30,
-                   'flag': 0}
-        message_json = json.dumps(message)
-        mqtt_connection.publish(
-            topic='532/light',
-            payload=message_json,
-            qos=mqtt.QoS.AT_LEAST_ONCE)
-        TOTAL = 0
+    subscribe_future, packet_id = mqtt_connection.subscribe(
+        topic="532/prediction",
+        qos=mqtt.QoS.AT_LEAST_ONCE,
+        callback=on_message_received)
+
+    subscribe_result = subscribe_future.result()
+    print("Subscribed to predictions")
+
+    while True:
+        time.sleep(10)
+
 
     # Disconnect
     print("Disconnecting...")
