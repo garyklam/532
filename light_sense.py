@@ -76,7 +76,7 @@ if __name__ == '__main__':
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     total = 0
-    for i in range(1, 120):
+    for i in range(12, 300):
         measurements = []
         start = datetime.now()
         curr = datetime.now()
@@ -89,7 +89,7 @@ if __name__ == '__main__':
                    'delta': round((max(measurements)-min(measurements)), 2),
                    'avg': round(mean(measurements), 2),
                    'total': total,
-                   'total_time': (i)*30,
+                   'total_time': (i-11)*30,
                    'flag': 0}
         message_json = json.dumps(message)
         mqtt_connection.publish(
