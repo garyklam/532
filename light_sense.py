@@ -89,7 +89,7 @@ if __name__ == '__main__':
                    'delta': round((max(measurements)-min(measurements)), 2),
                    'avg': round(mean(measurements), 2),
                    'total': total,
-                   'total_time': (i+1)*30,
+                   'total_time': (i)*30,
                    'blink': 0,
                    'flag': 0}
         message_json = json.dumps(message)
