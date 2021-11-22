@@ -42,8 +42,8 @@ def on_resubscribe_complete(resubscribe_future):
 
 # Callback when the subscribed topic receives a message
 def on_message_received(topic, payload):
-    print("Received message from topic '{}': {}".format(topic, payload))
     message = payload.decode('UTF-8')
+    print("Received message from topic '{}': {}".format(topic, message))
     if message['prediction'] == "0":
         print("alert")
         disconnect_future = mqtt_connection.disconnect()
