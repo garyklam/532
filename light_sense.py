@@ -23,6 +23,13 @@ def RCtime(RCpin):
     return reading
 
 
+def readswitch():
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
+    GPIO.setup(19, GPIO.IN)
+    return GPIO.input(19)
+
+
 def on_connection_interrupted(connection, error, **kwargs):
     print("Connection interrupted. error: {}".format(error))
 
@@ -72,31 +79,30 @@ if __name__ == '__main__':
     connect_future.result()
     print("Connected!")
 
-    DEBUG = 1
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     total = 0
-    for i in range(72, 300):
+    for i in range(1, 300):
         measurements = []
         start = datetime.now()
         curr = datetime.now()
         while (curr-start).total_seconds() < 30:
             measurements.append(round((10000/RCtime(12)), 2))
             curr = datetime.now()
-        total += 5 * round(mean(measurements), 2)
+        total += 0.05 * round(mean(measurements), 2)
         message = {'count': f'{i}',
                    'time': f'{curr.month}/{str(curr.day).zfill(2)} {str(curr.hour).zfill(2)}:{str(curr.minute).zfill(2)}:{str(curr.second).zfill(2)}',
                    'delta': round((max(measurements)-min(measurements)), 2),
                    'avg': round(mean(measurements), 2),
                    'total': total,
-                   'total_time': (i-71)*30,
-                   'flag': 0}
+                   'total_time': (i)*30,
+                   'flag': readswitch()}
         message_json = json.dumps(message)
         mqtt_connection.publish(
             topic='532/light',
             payload=message_json,
             qos=mqtt.QoS.AT_LEAST_ONCE)
-        TOTAL = 0
+
 
     # Disconnect
     print("Disconnecting...")
