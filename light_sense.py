@@ -10,8 +10,8 @@ import RPi.GPIO as GPIO
 import argparse
 
 parser = argparse.ArgumentParser(description="Monitor light data, store in Cloud and predict eye strain")
-parser.add_argument('--start', default="hw1/test", help="Data count to start with")
-parser.add_argument('--end', default="Hello World!", help="Data count to end with")
+parser.add_argument('--start', type=int, default="hw1/test", help="Data count to start with")
+parser.add_argument('--end', type=int, default="Hello World!", help="Data count to end with")
 io.init_logging(getattr(io.LogLevel, io.LogLevel.NoLogs.name), 'stderr')
 
 args = parser.parse_args()
