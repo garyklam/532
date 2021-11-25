@@ -7,10 +7,14 @@ from datetime import datetime
 import time
 from statistics import mean
 import RPi.GPIO as GPIO
+import argparse
 
-
+parser = argparse.ArgumentParser(description="Monitor light data, store in Cloud and predict eye strain")
+parser.add_argument('--start', default="hw1/test", help="Data count to start with")
+parser.add_argument('--end', default="Hello World!", help="Data count to end with")
 io.init_logging(getattr(io.LogLevel, io.LogLevel.NoLogs.name), 'stderr')
 
+args = parser.parse_args()
 
 def RCtime(RCpin):
     reading = 0
@@ -82,7 +86,7 @@ if __name__ == '__main__':
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     total = 0
-    for i in range(1, 300):
+    for i in range(args.start, args.end):
         measurements = []
         start = datetime.now()
         curr = datetime.now()
@@ -95,7 +99,7 @@ if __name__ == '__main__':
                    'delta': round((max(measurements)-min(measurements)), 2),
                    'avg': round(mean(measurements), 2),
                    'total': total,
-                   'total_time': (i)*30,
+                   'total_time': (i+1-args.start)*30,
                    'flag': readswitch()}
         message_json = json.dumps(message)
         mqtt_connection.publish(
