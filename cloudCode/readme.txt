@@ -1,0 +1,3 @@
+For the cloud end, this project requires one dynamodb table, one S3 bucket and three lambda functions. 
+Code for the three lambdas are provided, queryModel and updateModel require two layers to function, one is the built in AWSLambda SciPy layer(version depends on which python version is used) and the other is a custom layer that provides additional dependencies(the python folder contains the files necessary to create this layer).
+Each function requries different permissions to other services, updateLabels requres Dynamodb read and write, queryModel requires S3 get, IoT publish, and Lambda invoke, and updateModel requires Dynamodb scan and S3 put. 
